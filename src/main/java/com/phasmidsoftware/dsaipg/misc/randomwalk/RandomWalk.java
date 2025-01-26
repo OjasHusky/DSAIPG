@@ -6,6 +6,8 @@ package com.phasmidsoftware.dsaipg.misc.randomwalk;
 
 import java.util.Random;
 
+import static java.lang.Math.sqrt;
+
 /**
  * The RandomWalk class simulates a two-dimensional random walk. A "drunkard"
  * moves in a random direction for a specified number of steps, and the distance
@@ -20,8 +22,10 @@ public class RandomWalk {
      * @return the (Euclidean) distance from the origin to the current position.
      */
     public double distance() {
-        // TO BE IMPLEMENTED 
-         return 0.0;
+        // TO BE IMPLEMENTED
+        long x2= (long) x*x;
+        long y2= (long) y*y;
+        return sqrt(x2+y2);
         // END SOLUTION
     }
 
@@ -33,8 +37,11 @@ public class RandomWalk {
      */
     private void move(int dx, int dy) {
         // TO BE IMPLEMENTED  do move
-         throw new RuntimeException("Not implemented");
+        x+=dx;
+        y+=dy;
+         //throw new RuntimeException("Not implemented");
         // END SOLUTION
+
     }
 
     /**
@@ -43,8 +50,11 @@ public class RandomWalk {
      * @param m the number of steps the drunkard takes
      */
     private void randomWalk(int m) {
-        // TO BE IMPLEMENTED 
-throw new RuntimeException("implementation missing");
+        // TO BE IMPLEMENTED
+        for(int i=0;i<m; i++){
+            randomMove();
+        }
+//throw new RuntimeException("implementation missing");
     }
 
     /**
