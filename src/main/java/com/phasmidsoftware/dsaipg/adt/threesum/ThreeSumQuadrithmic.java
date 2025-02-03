@@ -61,10 +61,32 @@ class ThreeSumQuadrithmic implements ThreeSum {
      * or {@code null} if no such triple can be found.
      */
     Triple getTriple(int i, int j) {
-        // TO BE IMPLEMENTED  : use binary search to find the third element
-        // END SOLUTION
+        int low= 0; int high= length-1;
+        int tri = -(a[i]+a[j]);
+        while(low<=high){
+            int mid = (low + high) / 2;
+            if (mid == i || mid == j) {
+                if (mid == i) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+                continue;
+            }
+            if (a[mid] == tri) {
+                return new Triple(a[i], a[j], a[mid]);
+            }
+            if (a[mid] < tri) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
         return null;
     }
+
+
+
 
     private final int[] a;
     private final int length;
