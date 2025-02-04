@@ -64,15 +64,8 @@ class ThreeSumQuadrithmic implements ThreeSum {
         int low= 0; int high= length-1;
         int tri = -(a[i]+a[j]);
         while(low<=high){
-            int mid = (low + high) / 2;
-            if (mid == i || mid == j) {
-                if (mid == i) {
-                    low = mid + 1;
-                } else {
-                    high = mid - 1;
-                }
-                continue;
-            }
+            int mid = (high + low) / 2;
+
             if (a[mid] == tri) {
                 return new Triple(a[i], a[j], a[mid]);
             }
@@ -84,9 +77,6 @@ class ThreeSumQuadrithmic implements ThreeSum {
         }
         return null;
     }
-
-
-
 
     private final int[] a;
     private final int length;
