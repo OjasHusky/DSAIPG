@@ -119,10 +119,28 @@ public class PQImplementationsBenchmarking {
         Integer highestPriority = null;
         long startTime = System.nanoTime();
 
-        pq.buildHeap(Arrays.stream(data).boxed().toArray(Integer[]::new));  // Build the heap using Floyd's trick (bottom-up)
+        // Build the heap using Floyd's trick
+        pq.buildHeap(Arrays.stream(data).boxed().toArray(Integer[]::new));
 
+        // Now perform insertions and spill if needed
+        for (int value : data) {
+            if (pq.size() < M) {
+                pq.insert(value);  // Insert if we haven't reached max size
+            } else {
+                // Check if the current value is larger than the root (min-heap condition)
+                Integer root = pq.poll();  // This removes the root (smallest element)
+                if (comparator.compare(value, root) > 0) {
+                    pq.insert(value);  // Insert the current value
+                    spilled++;
+                } else {
+                    pq.insert(root);  // Reinsert the root if the new value is not larger
+                }
+            }
+        }
+
+        // Now remove the elements one by one
         for (int i = 0; i < REMOVALS && !pq.isEmpty(); i++) {
-            highestPriority = pq.poll();  // Remove elements using the "poll" method
+            highestPriority = pq.poll();  // Remove elements one by one
         }
 
         long endTime = System.nanoTime();
@@ -130,6 +148,8 @@ public class PQImplementationsBenchmarking {
 
         System.out.printf("Spilled Elements: %d, Highest Priority: %d, Total Time: %.3f ms\n", spilled, highestPriority, totalTime);
     }
+
+
 
     private static void fibonacciHeap(int[] data) {
         FibonacciHeap<Integer> fibonacciHeap = new FibonacciHeap<>();
@@ -154,4 +174,6 @@ public class PQImplementationsBenchmarking {
 
         System.out.printf("Spilled Elements: %d, Highest Priority: %d, Total Time: %.3f ms\n", spilled, highestPriority, totalTime);
     }
+
+
 }
