@@ -1,5 +1,6 @@
-package com.phasmidsoftware.dsaipg.sort.par;
+package Java.src.test.java.com.phasmidsoftware.dsaipg.sort.par;
 
+import Java.src.main.java.com.phasmidsoftware.dsaipg.sort.par.ParSort;
 import org.junit.Test;
 
 import java.util.Arrays;
