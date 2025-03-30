@@ -6,8 +6,12 @@ package com.phasmidsoftware.dsaipg.projects.mcts.tictactoe;
 
 import com.phasmidsoftware.dsaipg.projects.mcts.core.Game;
 import com.phasmidsoftware.dsaipg.projects.mcts.core.Move;
+import com.phasmidsoftware.dsaipg.projects.mcts.core.Node;
 import com.phasmidsoftware.dsaipg.projects.mcts.core.State;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -20,10 +24,40 @@ public class TicTacToe implements Game<TicTacToe> {
      * @param args command-line arguments.
      */
     public static void main(String[] args) {
-        // NOTE the behavior of the game to be run will be based on the TicTacToe instance field: random.
-        State<TicTacToe> state = new TicTacToe().runGame();
-        if (state.winner().isPresent()) System.out.println("TicTacToe: winner is: " + state.winner().get());
-        else System.out.println("TicTacToe: draw");
+        int iters = 250;     // set number of iterations of game flow we want to play
+        String filePath = "benchmark.txt";      // output file to store benchmark results
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            long totalTimeInMillis = 0l;
+            long totalTime = 0l;
+
+
+            for(int i=0; i<iters; i++) {
+                long startTime = System.currentTimeMillis(); // Start timer
+
+                // NOTE the behavior of the game to be run will be based on the TicTacToe instance field: random.
+                State<TicTacToe> state = new TicTacToe().runGame();
+                int winner;
+                if (state.winner().isPresent()) {
+                    winner = state.winner().get();
+                    // write winner to benchmarking report
+                    writer.write(Integer.toString(winner));
+                    if (winner == 1) System.out.println("TicTacToe: winner is: X");
+                    else System.out.println("TicTacToe: winner is: 0");
+                } else System.out.println("TicTacToe: draw");
+
+                long endTime = System.currentTimeMillis(); // End timer
+                totalTime = endTime - startTime; // Calculate total time
+                totalTimeInMillis += totalTime;
+                System.out.println("Total MCTS execution time for TicTacToe: " + totalTime + " milliseconds");
+
+                // write to file
+                writer.write("," + totalTime + "\n");
+            }
+            System.out.println("Average total time (in milliseconds): " + totalTimeInMillis/iters);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
     }
 
     public static final int X = 1;
@@ -46,11 +80,24 @@ public class TicTacToe implements Game<TicTacToe> {
      */
     State<TicTacToe> runGame() {
         State<TicTacToe> state = start();
-        int player = opener();
+        MCTS mcts = new MCTS(new TicTacToeNode(state)); // Initialize MCTS with the starting state
+//        int player = opener();
         while (!state.isTerminal()) {
-            state = state.next(state.chooseMove(player));
-            player = 1 - player;
+            System.out.println(state.toString());
+            mcts.run(1000);
+//            state = state.next(state.chooseMove(player));
+//            player = 1 - player;
+            // Assuming bestChild correctly chooses the best move
+            Node<TicTacToe> bestMove = mcts.bestChild(MCTS.root);
+            if (bestMove == null) {
+                throw new IllegalStateException("MCTS did not return a move");
+            }
+            state = bestMove.state();  // Update the game state to the best move's state
+
+            // Reset the root of the MCTS to the new state for the next player's move
+            MCTS.root = new TicTacToeNode(state);
         }
+        System.out.println(state.toString());
         return state;
     }
 
@@ -173,7 +220,7 @@ public class TicTacToe implements Game<TicTacToe> {
         /**
          * Method to determine if this State represents the end of the game?
          *
-         * @return an optional int if this State is a win/loss/draw.
+         * @return true if this State is a win/loss/draw.
          */
         public Optional<Integer> winner() {
             return position.winner();
@@ -227,9 +274,9 @@ public class TicTacToe implements Game<TicTacToe> {
 
         @Override
         public String toString() {
-            return "TicTacToe{\n" +
-                    position +
-                    "\n}";
+            return "TicTacToe\n" +
+                    position.render() +
+                    "\n";
         }
 
         public TicTacToeState(Position position) {

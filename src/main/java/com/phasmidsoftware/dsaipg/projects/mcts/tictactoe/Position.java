@@ -41,7 +41,7 @@ public class Position {
      * Method to parse a single cell.
      *
      * @param cell the String for the cell.
-     * @return a number between -1 and one inclusive.
+     * @return a number between -1 and 1 inclusive.
      */
     static int parseCell(String cell) {
         return switch (cell.toUpperCase()) {
@@ -64,11 +64,11 @@ public class Position {
         if (player == last) throw new RuntimeException("consecutive moves by same player: " + player);
         int[][] matrix = copyGrid();
         if (matrix[x][y] < 0) {
-            // TO BE IMPLEMENTED 
-             return null;
-            // END SOLUTION
+            matrix[x][y] = player;
+            return new Position(matrix, count+1, player);
+        } else {
+            throw new RuntimeException("Position is occupied: " + x + ", " + y);
         }
-        throw new RuntimeException("Position is occupied: " + x + ", " + y);
     }
 
     /**
@@ -82,9 +82,7 @@ public class Position {
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++)
                 if (grid[i][j] < 0)
-                    // TO BE IMPLEMENTED 
-         ;
-        // END SOLUTION
+                    result.add(new int[]{i, j});
         return result;
     }
 
@@ -144,9 +142,16 @@ public class Position {
      * @return true if there are three cells in a line that are the same and equal to the last player.
      */
     boolean threeInARow() {
-        // TO BE IMPLEMENTED 
-         return false;
-        // END SOLUTION
+        // Check rows and columns
+        for (int i = 0; i < gridSize; i++) {
+            if ((projectRow(i)[0] == last && projectRow(i)[1] == last && projectRow(i)[2] == last) ||
+                    (projectCol(i)[0] == last && projectCol(i)[1] == last && projectCol(i)[2] == last)) {
+                return true;
+            }
+        }
+        // Check diagonals
+        return (grid[0][0] == last && grid[1][1] == last && grid[2][2] == last) ||
+                (grid[0][2] == last && grid[1][1] == last && grid[2][0] == last);
     }
 
     /**
@@ -227,7 +232,8 @@ public class Position {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Position position)) return false;
+        if (!(o instanceof Position)) return false;
+        Position position = (Position) o;
         return Arrays.deepEquals(grid, position.grid);
     }
 

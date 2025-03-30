@@ -4,8 +4,10 @@
 
 package com.phasmidsoftware.dsaipg.projects.mcts.core;
 
-import java.util.Collection;
+import com.phasmidsoftware.dsaipg.projects.mcts.tictactoe.TicTacToe;
+
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This interface defines the behavior of a Node in an MCTS for playing a game (G).
@@ -37,7 +39,7 @@ public interface Node<G extends Game> {
      *
      * @return a Collection of Nodes.
      */
-    Collection<Node<G>> children();
+    List<Node<TicTacToe>> children();
 
     /**
      * Method which adds the immediate children of this Node.
