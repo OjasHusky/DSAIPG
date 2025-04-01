@@ -4,10 +4,8 @@
 
 package com.phasmidsoftware.dsaipg.projects.mcts.core;
 
-import com.phasmidsoftware.dsaipg.projects.mcts.tictactoe.TicTacToe;
-
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This interface defines the behavior of a Node in an MCTS for playing a game (G).
@@ -39,7 +37,7 @@ public interface Node<G extends Game> {
      *
      * @return a Collection of Nodes.
      */
-    List<Node<TicTacToe>> children();
+    Collection<Node<G>> children();
 
     /**
      * Method which adds the immediate children of this Node.
@@ -70,10 +68,18 @@ public interface Node<G extends Game> {
      */
     int wins();
 
+    void setWins(int wins);
+
     /**
      * @return the number of playouts evaluated (including this node). A leaf node will have a playouts value of 1.
      */
     int playouts();
+
+    void setPlayouts(int playout);
+
+    // Add methods to handle parent node
+    Node<G> getParent();
+    void setParent(Node<G> parent);
 
     private void addChildren(final State<G> state) {
         for (Iterator<Move<G>> it = state.moveIterator(state.player()); it.hasNext(); )
