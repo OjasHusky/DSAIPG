@@ -4,10 +4,7 @@ import com.phasmidsoftware.dsaipg.projects.mcts.core.Move;
 import com.phasmidsoftware.dsaipg.projects.mcts.core.Node;
 import com.phasmidsoftware.dsaipg.projects.mcts.core.State;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class MCTS {
 
@@ -76,6 +73,8 @@ public class MCTS {
             state = state.next(move);
         }
         return state.winner().orElse(-1); // Return winner (-1 = O wins, 1 = X wins, 0 = draw)
+
+
     }
 
     // Backpropagate the result of a simulation up the tree
@@ -85,13 +84,18 @@ public class MCTS {
             node.setPlayouts(node.playouts() + 1);
 
             // Update wins based on the result of the simulation
-            if ((node.state().player() == 1 && result == 1) ||  // X wins and it's X's move
-                    (node.state().player() == 0 && result == -1)) { // O wins and it's O's move
+            if ((node.state().player() == 0 && result == 1) ||  // X wins and it's X's move
+                   (node.state().player() == 1 && result == 0)) { // O wins and it's O's move
                 node.setWins(node.wins() + 1);
-            } else if (result == 0) { // Draw
-                node.setWins(node.wins() + 1); // Optionally update for a draw
-            }
+            } else if (result == -1) { // Draw
+               node.setWins(node.wins() + 0); // Optionally update for a draw
+           }
 
+          //  if (result == node.state().player()) {
+           //     node.setWins(node.wins() + 1); // 如果当前节点玩家就是赢家，加分
+            //} else if (result == 0) {
+             //   node.setWins(node.wins() + 1); // 平局也可给1分（可调整）
+            //}
             node = node.getParent();  // Move up to the parent node for backpropagation
         }
     }
